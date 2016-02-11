@@ -1,0 +1,10 @@
+{
+  "applications": {
+    "_default": {
+      "link": "buckets"
+    },
+    "buckets": {
+      "applicationId": "V4ZIAo5oe6mgtsRcqkADvqoyqYrmyJ8IDgs9VC7r"
+    }
+  }
+}
