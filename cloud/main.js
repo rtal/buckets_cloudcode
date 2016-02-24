@@ -38,61 +38,17 @@ Parse.Cloud.define("addRohitToCommunity", function(request, response) {
 });
 
 
-// UNTESTED
-Parse.Cloud.define("commonItemsWithCommunityMembers", function(request, response) {
-	var communityName = request.params.name;
-	var currentUser = request.params.user;
+Parse.Cloud.define("numberInvitesForUser", function(request, response) {
+	var username = request.params.username;
 
-	// get all the bucket items for currentUser
-	var query1 = new Parse.Query("BucketItem");
-	query1.equalTo("user", currentUser);
-	query1.find({
+	var query = new Parse.Query("Invite");
+	query.containsAll("members", [username]);
+	query.find({
 		success: function(results) {
-			// put the bucket item names in an array
-			var currentUserBucketItemNames = [];
-			results.forEach(function(bucketItem) {
-				currentUserBucketItemNames.push(item.get("name"));
-			});
-
-			// find all other users in communityName
-			var query2 = new Parse.Query("User");
-			query2.containsAll("communities", [communityName]);
-			query2.find({
-				success: function(results) {
-					usersToNumberItemsInCommon = new Object();
-
-					// for each user, find the number of items in common with currentUser
-					results.forEach(function(otherUser) {
-						var query3 = new Parse.Query("BucketItem");
-						query3.equalTo("user", otherUser);
-						query3.find({
-							success: function(results) {
-								// see how many bucket items otherUser shares with currentUser
-								var itemsInCommon = 0;
-
-								results.forEach(function(bucketItem) {
-									if (currentUserBucketItemNames.contains(bucketItem.get("name"))) {
-										itemsInCommon++;
-									}
-								});
-								usersToNumberItemsInCommon[otherUser] = itemsInCommon;
-							}, 
-							error: function() {
-								// pass
-							}
-						});
-					});
-
-
-					// RETURN HERE
-					response.success(usersToNumberItemsInCommon);
-				}, 
-				error: function() {
-					response.error("couldn't find other users in community");
-				}
-			});
-		}, error: function() {
-			response.error("couldn't find given user");
+			response.success(results.length);
+		},
+		error: function() {
+			response.error("couldn't find the number of invites for username " + username);
 		}
 	});
 });
